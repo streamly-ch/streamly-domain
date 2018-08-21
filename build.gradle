@@ -1,0 +1,98 @@
+buildscript {
+    project.ext.DEPLOYMENT = System.getProperty('deployment') ?: false
+    project.ext.VCS_TAG = System.getProperty('TRAVIS_TAG') ?: System.getenv('TRAVIS_TAG')
+    project.ext.POM = [
+            groupId    : 'ch.streamly',
+            artifactId : 'streamly-domain',
+            description: 'Common Domain objects for the streamly librairies.',
+            developers : [
+                    [
+                            id   : 'mgabriel',
+                            name : 'Mathieu Gabriel',
+                            email: 'dev@streamly.ch'
+                    ]
+            ]]
+    project.ext.INFO = [
+            repo        : 'https://github.com/streamly-ch/streamly-domain.git',
+            url         : 'https://github.com/streamly-ch/streamly-domain',
+            github      : 'https://github.com/streamly-ch/streamly-domain',
+            githubIssues: 'https://github.com/streamly-ch/streamly-domain/issues'
+    ]
+    project.ext.BINTRAY = [
+            repo        : 'streamly-repo',
+            name        : 'streamly-domain',
+            organization: 'streamly',
+            userName    : System.getenv('BINTRAY_USER'),
+            apiToken    : System.getenv('BINTRAY_KEY')
+    ]
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+    }
+}
+
+group POM.groupId
+
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'jacoco'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+
+
+repositories {
+    mavenCentral()
+}
+
+if (DEPLOYMENT) {
+    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
+    apply plugin: 'com.jfrog.bintray'
+
+    println 'Applying deployment scripts'
+    apply from: './scripts/bintray-deploy.gradle'
+}
+
+dependencies {
+    compile "org.slf4j:slf4j-api:1.7.25"
+   
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.2.0"
+    testCompile "org.junit.jupiter:junit-jupiter-engine:5.2.0"
+    testCompile "org.junit.platform:junit-platform-launcher:1.2.0"
+    testCompile "commons-io:commons-io:2.6"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        xml.destination new File("${buildDir}/reports/jacoco/report.xml")
+        html.enabled true
+        csv.enabled false
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+javadoc.failOnError = false
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
