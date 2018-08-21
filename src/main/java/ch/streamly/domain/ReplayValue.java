@@ -16,7 +16,7 @@ public interface ReplayValue<T> extends WrappedValue<T> {
      * @param value the value to wrap.
      * @return a ReplayValue that is not a loop restart.
      */
-    default ReplayValue newValue(T value){
+    static <T> ReplayValue newValue(T value){
         return new ReplayValueImpl<>(value);
     }
 
@@ -25,7 +25,7 @@ public interface ReplayValue<T> extends WrappedValue<T> {
      * @param value the value to wrap.
      * @return a loop restart value.
      */
-    default ReplayValue newLoopRestartValue(T value){
+    static <T> ReplayValue newLoopRestartValue(T value){
         return new ReplayValueImpl<>(true, value);
     }
 }

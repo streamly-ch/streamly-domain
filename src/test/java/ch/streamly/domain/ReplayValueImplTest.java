@@ -1,7 +1,9 @@
 package ch.streamly.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,6 +34,19 @@ class ReplayValueImplTest {
         assertEquals(first, first);
         assertNotEquals(first, third);
         assertEquals(first.hashCode(), second.hashCode());
+    }
+
+    @Test
+    @DisplayName("test default constructors")
+    void testDefaultConstructors() {
+        String val = "test";
+        ReplayValue replayValue = ReplayValue.newValue(val);
+        assertEquals(val, replayValue.value());
+        assertFalse(replayValue.isLoopRestart());
+
+        replayValue = ReplayValue.newLoopRestartValue(val);
+        assertEquals(val, replayValue.value());
+        assertTrue(replayValue.isLoopRestart());
     }
 
 }
