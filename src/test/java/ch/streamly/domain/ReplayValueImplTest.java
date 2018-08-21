@@ -40,7 +40,7 @@ class ReplayValueImplTest {
     @DisplayName("test default constructors")
     void testDefaultConstructors() {
         String val = "test";
-        ReplayValue replayValue = ReplayValue.newValue(val);
+        ReplayValue<String> replayValue = ReplayValue.newValue(val);
         assertEquals(val, replayValue.value());
         assertFalse(replayValue.isLoopRestart());
 
